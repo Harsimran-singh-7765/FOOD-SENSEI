@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FOOD SENSEI </title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="loader-wrapper">
+        <div class="loader-content">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="loader-logo">
+            <p class="loading-text">Loading FOOD SENSEI...</p>
+            <div class="glow-ring">
+                <span class="loader-text" id="loader-text">0%</span>
+              </div>
+        </div>
+    </div>
+    
+    <div class="wrapper">
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="/" class="logo">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Food Sensei Logo" class="logo-img">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <div class="container">
+            <header>
+                <h1>FOOD SENSEI</h1>
+                <p class="subtitle">Your AI-powered Nutrition & Food Guide</p>
+            </header>
+
+            <main>
+                <div class="task-buttons">
+                    <a href="/task1" class="task-btn">📷 Analyze Food</a>
+                    <a href="/task2" class="task-btn">📍 Find Healthy Nearby</a>
+                    <a href="/task3" class="task-btn">🧠 Bust Food Myths</a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Food Sensei. Powered by Gemini + Crew AI.</p>
+    </footer>
+
+<script>
+
+    
+        let percent = 0;
+        const text = document.getElementById("loader-text");
+      
+        const interval = setInterval(() => {
+          percent++;
+          text.textContent = percent + "%";
+          if (percent >= 100) {
+            clearInterval(interval);
+          }
+        }, 30); // ~3 seconds to reach 100%
+      
+      
+    window.addEventListener("load", () => {
+        const loader = document.getElementById("loader-wrapper");
+        setTimeout(() => {
+            loader.style.display = "none";
+        }, 3000); // Keep visible for animation to complete
+    });
+</script>
+    
+</body>
+
+</html>
