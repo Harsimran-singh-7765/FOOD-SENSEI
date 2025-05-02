@@ -45,8 +45,15 @@
                 </div>
             </main>
         </div>
+        <div id="camera-section" style="display: none; text-align: center; margin-top: 20px;">
+            <video id="camera" autoplay playsinline width="300" height="225" style="border-radius: 10px; border: 2px solid #ccc;"></video>
+            <br>
+            <button id="capture-btn">📸 Capture</button>
+            <br>
+            <canvas id="snapshot" width="300" height="225" style="border-radius: 10px; border: 2px solid #ccc;"></canvas>
+        </div>
     </div>
-
+</div>
     <footer>
         <p>&copy; 2025 Food Sensei. Powered by Gemini + Crew AI.</p>
     </footer>
@@ -63,15 +70,79 @@
           if (percent >= 100) {
             clearInterval(interval);
           }
-        }, 30); // ~3 seconds to reach 100%
+        }, 30); 
       
       
     window.addEventListener("load", () => {
         const loader = document.getElementById("loader-wrapper");
         setTimeout(() => {
             loader.style.display = "none";
-        }, 3000); // Keep visible for animation to complete
+        }, 3000); 
     });
+
+
+    const task1Btn = document.querySelector('a[href="/task1"]');
+    const video = document.getElementById('camera');
+    const canvas = document.getElementById('snapshot');
+    const captureButton = document.getElementById('capture-btn');
+    const cameraSection = document.getElementById('camera-section');
+    
+    
+    let message = document.createElement('p');
+    message.id = "message";
+    message.style.marginTop = "15px";
+    cameraSection.appendChild(message);
+    
+    function startWebcam() {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.log('Error accessing webcam: ' + err);
+                message.innerHTML = "⚠️ Error accessing webcam.";
+            });
+    }
+    
+    function captureImage() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL('image/png');
+        sendImageToServer(imageData);
+    }
+    
+    function sendImageToServer(imageData) {
+        message.className = "loading";
+        message.textContent = "🧠 Analyzing...";
+    
+        fetch('/capture', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_data: imageData })
+        })
+        .then(res => res.json())
+        .then(data => {
+            message.className = "";
+            message.textContent = data.comment || "✅ Image sent!";
+        })
+        .catch(err => {
+            message.className = "";
+            message.textContent = "❌ Error sending image.";
+        });
+    }
+    
+    
+    const task1Link = document.querySelector('a[href="/task1"]');
+    task1Link.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        cameraSection.style.display = 'block'; 
+        startWebcam(); 
+    });
+
+    captureButton.onclick = captureImage;
+        
 </script>
     
 </body>
