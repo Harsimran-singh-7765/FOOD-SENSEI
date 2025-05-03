@@ -104,6 +104,6 @@ Python app.py
 ```
 ---
 ## Developed by Polardevs <p align="center">
-  <img src="polar_dev.png" alt="Food Sensei Logo" width="150"/>
+  <img src="Polar_dev.png" alt="Food Sensei Logo" width="150"/>
 </p>
 
