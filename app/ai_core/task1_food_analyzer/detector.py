@@ -7,6 +7,7 @@ from crewai_tools import ScrapeWebsiteTool
 from langchain.tools import Tool
 from langchain.agents import Tool
 import json
+import re
 load_dotenv(dotenv_path=r".env")
 os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY")
 configure(api_key=os.environ["GEMINI_API_KEY"])
@@ -33,6 +34,7 @@ def detect_food_item(description):
                 "You are an expert in food classification and packaging analysis. "
                 "You have a deep understanding of grocery items, food labeling, common brands, and "
                 "types of consumables. You read product packaging and visual cues to determine the food type."
+                
             ),
             verbose=True,
             llm=llm,
@@ -52,7 +54,7 @@ def detect_food_item(description):
                 "  'details': {\n"
                 "     # If packaged: 'company', 'product_name', 'specifics' (like flavor, variant)\n"
                 "     # If unpackaged: 'type' (fruit/vegetable/street food), 'description'\n"
-                "     # If not edible : 'what is it', why not edible"
+                "     # If not edible : 'what is it', why not edible "
                 "  }\n"
                 "}"
             ),
@@ -63,7 +65,20 @@ def detect_food_item(description):
         crew = Crew(agents=[agent], tasks=[task])
         result = crew.kickoff()
 
-        return json.loads(result.raw )  
+        raw = result.raw.strip()
+
+
+        match = re.search(r'```json\s*(\{.*?\})\s*```', raw, re.DOTALL)
+        if match:
+            json_str = match.group(1)
+            try:
+                return json.loads(json_str)
+            except json.JSONDecodeError as e:
+                print(f"JSON decode error: {e}")
+                return {"edible": False, "error": "Malformed JSON in agent output"}
+        else:
+            print("No JSON block found in result")
+            return json.loads(result.raw ) 
     except Exception as e:
         print(f"Error in food detection: {e}")
         return {"edible": False, "error": str(e)}

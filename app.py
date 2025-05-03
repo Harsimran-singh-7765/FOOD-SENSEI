@@ -20,6 +20,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from app.ai_core.task1_food_analyzer.detector import detect_food_item
 from app.ai_core.task1_food_analyzer.packaged_handler import analyze_packaged_food
+from app.ai_core.task1_food_analyzer.unpackaged_handler import analyze_unpackaged_food
 load_dotenv(dotenv_path=r".env")
 os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY")
 configure(api_key=os.environ["GEMINI_API_KEY"])
@@ -109,12 +110,18 @@ def handle_detection(detection):
 
     if detection["edible"] and not detection.get("packaged", False):
         print("🥗 Unpackaged Food Detected!")
-        specifics = details.get("specifics", {})
-        
-        return
+        verdict = analyze_unpackaged_food(detection)
+
+        return verdict
+    
+    
+    
+    
+    
 @app.route('/capture', methods=['POST'])
 def capture():
     data = request.get_json()
+    user_description = data.get("user_description", "")
     if not data or 'image_data' not in data:
         return jsonify({'error': 'No image data provided'}), 400
 
@@ -129,14 +136,27 @@ def capture():
     with open(img_filename, 'wb') as img_file:
         img_file.write(image_bytes)
     image = Image.open(img_filename)
+    
+    
     description = get_frame_description(image)
     print(description)
     
     detection = detect_food_item(description)
     
     print(detection['edible'])
-    
+    if user_description:
+        detection['user_input'] = user_description
+
     verdict = handle_detection(detection)
-    return jsonify({'comment':verdict})
+    verdict = verdict.replace("```html", "").replace("```", "").strip()
+    render_template("index.html", result=verdict)
+    print(verdict)
+
+    return jsonify({'comment': verdict})
+
+
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)

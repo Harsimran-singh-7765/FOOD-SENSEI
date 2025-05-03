@@ -24,13 +24,13 @@ def analyze_packaged_food(product_name,detection, company_name=None):
         query = f"{product_name} {company_name or ''} ingredients preservatives nutrition label"
 
     
-        agent = Agent(
+        Analyzer = Agent(
             role="Packaged Food Investigator",
             goal=(
                 "Use web search to extract detailed nutrition information about a packaged food product. mainly from official site of '{product_name}' from '{company_name or 'any brand'}' "
                 "Focus especially on its ingredients, any preservatives, nutritional value, allergens, and certifications like FDA or FSSAI. "
                 "Return all insights in a clean dictionary format for further use."
-                "don't go over searching "
+                "don't go over searching , search less but effective mainly on official site"
             ),
             backstory=(
                 "You are a nutritional analysis agent who specializes in packaged food products. "
@@ -41,8 +41,22 @@ def analyze_packaged_food(product_name,detection, company_name=None):
             tools=[search_tool, scrape_tool],
         )
 
-        # Task definition
-        task = Task(
+        Editor = Agent(
+            role="Frontend Developer and Content Formatter",
+            goal=(
+                "Take a structured dictionary response about a food item and generate a visually appealing HTML `<div>` layout. "
+                "Use color-coded tags for key attributes (e.g., green for 'edible', red for 'not edible'), "
+                "display product details using semantic HTML and styled tables, and ensure accessibility and responsiveness."
+            ),
+            backstory=(
+                "You are a frontend-focused AI expert who specializes in converting raw data into beautiful and structured UI components. "
+                "You ensure that nutritional and product data is easy to read and visually appealing for end users."
+            ),
+            verbose=True,
+            llm=llm,
+        )
+        
+        analyzing = Task(
             description=(
                 f"Find information on this product: '{product_name}' from '{company_name or 'any brand'}'. study more by {detection} "
                 f"Search and extract:\n"
@@ -67,13 +81,30 @@ def analyze_packaged_food(product_name,detection, company_name=None):
                 "  'warnings': '...'\n"
                 "}"
             ),
-            agent=agent
+            agent=Analyzer
         )
+        
+        formatting = Task(
+            description=(
+                f"Take the following dictionary and create a full HTML `<div>` that represents it nicely:"
+                "- Add color-coded tags for 'edible' (green) or 'not edible' (red)\n"
+                "- Display 'details' as description\n"
+                "- If detailed nutrition info exists, format it in a table\n"
+                "- Add spacing, round corners, and consider mobile readability"
+            ),
+            expected_output=(
+                "Return only the full HTML string wrapped in a <div>. Use inline CSS for styling tags and layout if needed."
+            ),
+            agent=Editor
+        )
+            
 
-        crew = Crew(agents=[agent], tasks=[task])
+        crew = Crew(agents=[Analyzer, Editor], tasks=[analyzing, formatting])
         result = crew.kickoff()
         return result.raw
+
 
     except Exception as e:
         print(f"Error analyzing packaged food: {e}")
         return {"error": str(e)}
+
