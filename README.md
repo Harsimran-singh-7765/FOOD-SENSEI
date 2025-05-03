@@ -1,4 +1,6 @@
-# 🥗 FOOD SENSEI
+# <p align="center">
+  <img src="static/img/logo.png" alt="Food Sensei Logo" width="150"/>
+</p> FOOD SENSEI
 
 **Food Sensei** is your AI-powered Nutrition & Food Guide built using Flask, CrewAI (multi-agent framework), and Gemini. It provides intelligent food insights, suggestions, and myth-busting knowledge based on images, location, and user queries.
 
