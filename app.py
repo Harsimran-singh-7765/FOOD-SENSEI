@@ -1,6 +1,7 @@
 
 from flask import Flask, render_template, request, jsonify
 import os
+import time
 import tempfile
 from PIL import Image
 from io import BytesIO
@@ -12,6 +13,7 @@ from flask_cors import CORS
 import base64
 import sys
 import json
+
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
@@ -155,6 +157,38 @@ def capture():
     return jsonify({'comment': verdict})
 
 
+
+
+
+@app.route('/location', methods=['POST'])
+def handle_location():
+    try:
+        data = request.get_json()
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+
+        if latitude is None or longitude is None:
+            return jsonify({'error': 'Missing coordinates'}), 400
+
+        print(f"📍 Received location: ({latitude}, {longitude})")
+
+        
+      
+        comment_html = f"""
+        <h3>🥗 Healthy Food Options Near You</h3>
+        <ul>
+            <li>🌿 Green Bowl Cafe - 0.4 km away</li>
+            <li>🍲 Fit Feast Kitchen - 0.9 km away</li>
+            <li>🍎 FreshBites Express - 1.2 km away</li>
+        </ul>
+        <p style="color: green;">Showing results for latitude {latitude:.4f}, longitude {longitude:.4f}</p>
+        """
+
+        return jsonify({'comment': comment_html})
+
+    except Exception as e:
+        print("❌ Error in /location:", e)
+        return jsonify({'error': 'Something went wrong'}), 500
 
 
 

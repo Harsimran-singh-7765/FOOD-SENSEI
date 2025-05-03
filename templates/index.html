@@ -69,6 +69,10 @@
             <canvas id="snapshot" width="300" height="225" style="border-radius: 10px; border: 2px solid #ccc;"></canvas>
             <div id="verdict-box" style="margin-top: 20px;"></div>
         </div>
+
+        <div id="camera-section2" style="display: none; text-align: center; margin-top: 20px;">
+            <div id="verdict-box-2" style="margin-top: 20px;"> </div>
+        </div>
     </div>
 
     <footer>
@@ -98,11 +102,18 @@
         const cameraSection = document.getElementById('camera-section');
         const task1Link = document.querySelector('a[href="/task1"]');
         const verdictBox = document.getElementById("verdict-box");
+        const verdictBox2 = document.getElementById("verdict-box-2");
 
-        let message = document.createElement('p');
-        message.id = "message";
-        message.style.marginTop = "15px";
-        cameraSection.appendChild(message);
+        let message1 = document.createElement('p');
+        message1.id = "message1";
+        message1.style.marginTop = "15px";
+        cameraSection.appendChild(message1);
+        
+        let message2 = document.createElement('p');
+        message2.id = "message2";
+        message2.style.marginTop = "15px";
+        document.getElementById('camera-section2').appendChild(message2);
+        
 
         function startWebcam() {
             navigator.mediaDevices.getUserMedia({ video: true })
@@ -172,31 +183,31 @@
         task2Link.addEventListener('click', (e) => {
             e.preventDefault();
             cameraSection.style.display = 'none'; 
-
-            verdictBox.innerHTML = "";
-            message.textContent = "";
-            message.className = "";
+            document.getElementById('camera-section2').style.display = 'block';
+            verdictBox2.innerHTML = "";
+            message2.textContent = "";
+            message2.className = "";
         
             if (!navigator.geolocation) {
                 message.textContent = "⚠️ Your browser doesn't support location services.";
                 return;
             }
         
-            message.className = "loading";
-            message.textContent = "📍 Getting your location...";
+            message2.className = "loading";
+            message2.textContent = "📍 Getting your location...";
         
             navigator.geolocation.getCurrentPosition(
                 position => {
                     const { latitude, longitude } = position.coords;
         
                     // Show loading content in verdictBox
-                    verdictBox.innerHTML = `
+                    verdictBox2.innerHTML = `
                         <p style="font-weight: bold; font-size: 1.2em;">📍 Location Acquired</p>
                         <p>Latitude: ${latitude.toFixed(4)}<br>Longitude: ${longitude.toFixed(4)}</p>
                         <p style="color: green; font-weight: bold;">🍽️ Finding healthy food options near you...</p>
                     `;
         
-                    message.textContent = "";  // clear loading message
+                    message2.textContent = "";  
         
                     fetch('/location', {
                         method: 'POST',
@@ -205,23 +216,23 @@
                     })
                     .then(res => res.json())
                     .then(data => {
-                        message.className = "";
-                        message.textContent = "";
+                        message2.className = "";
+                        message2.textContent = "";
         
                         if (data.comment) {
-                            verdictBox.innerHTML = data.comment;
+                            verdictBox2.innerHTML = data.comment;
                         } else {
-                            verdictBox.innerHTML = "<p>✅ Location received! Waiting for nearby food results...</p>";
+                            verdictBox2.innerHTML = "<p>✅ Location received! Waiting for nearby food results...</p>";
                         }
                     })
                     .catch(err => {
-                        message.className = "";
-                        message.textContent = "❌ Couldn't send location.";
+                        message2.className = "";
+                        message2.textContent = "❌ Couldn't send location.";
                         console.error("❌ Error:", err);
                     });
                 },
                 error => {
-                    message.textContent = "❌ Couldn't get your location.";
+                    message2.textContent = "❌ Couldn't get your location.";
                     console.error("❌ Geolocation Error:", error);
                 }
             );
