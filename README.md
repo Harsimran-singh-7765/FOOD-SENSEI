@@ -97,7 +97,13 @@ food-sensei/
 pip install -r requirements.txt
 
 ```
-3. **Run the apps**
+3. ** create .env **
+   ```bash
+   GEMINI_API_KEY="GEMINI_kEY"
+   SERPER_API_KEY = "SERPER_API_KEY"
+   ```
+   
+5. **Run the apps**
 ```bash 
 Python app.py
 
