@@ -73,6 +73,37 @@
         <div id="camera-section2" style="display: none; text-align: center; margin-top: 20px;">
             <div id="verdict-box-2" style="margin-top: 20px;"> </div>
         </div>
+
+        
+        <div id="chatbot-section" style="display: none; margin-top: 20px; text-align: center;">
+            <div style="max-width: 600px; margin: auto; background: #121212; padding: 20px; border-radius: 12px; box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);">
+                <h2 style="color: #00ffff;">🧠 Bust Food Myths</h2>
+                <div id="chat-window" style="
+                    border: 1px solid #7b68ee;
+                    border-radius: 10px;
+                    padding: 10px;
+                    min-height: 200px;
+                    text-align: left;
+                    background: #1e1e1e;
+                    color: #e0e0e0;
+                    overflow-y: auto;
+                    max-height: 400px;
+                    font-family: monospace;
+                "></div>
+                <div style="margin-top: 10px; display: flex; justify-content: space-between; gap: 10px;">
+                    <input type="text" id="chat-input" placeholder="Type a food myth or question..." 
+                        style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #7b68ee; background: #2b2b2b; color: #00ffff;">
+                    <button id="send-btn" 
+                        style="padding: 10px 16px; background: #7b68ee; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                        ➡️ Send
+                    </button>
+                </div>
+                <p id="chat-message" style="margin-top: 10px; color: #ff69b4;"></p>
+            </div>
+        </div>
+        
+
+
     </div>
 
     <footer>
@@ -103,6 +134,12 @@
         const task1Link = document.querySelector('a[href="/task1"]');
         const verdictBox = document.getElementById("verdict-box");
         const verdictBox2 = document.getElementById("verdict-box-2");
+        const task3Link = document.querySelector('a[href="/task3"]');
+        const chatbotSection = document.getElementById('chatbot-section');
+        const chatWindow = document.getElementById('chat-window');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatMessage = document.getElementById('chat-message');
 
         let message1 = document.createElement('p');
         message1.id = "message1";
@@ -175,6 +212,8 @@
         task1Link.addEventListener('click', (e) => {
             e.preventDefault();
             cameraSection.style.display = 'block';
+            chatbotSection.style.display = 'none';
+            document.getElementById('camera-section2').style.display = 'none';
             startWebcam();
         });
 
@@ -183,6 +222,7 @@
         task2Link.addEventListener('click', (e) => {
             e.preventDefault();
             cameraSection.style.display = 'none'; 
+            chatbotSection.style.display = 'none';
             document.getElementById('camera-section2').style.display = 'block';
             verdictBox2.innerHTML = "";
             message2.textContent = "";
@@ -238,6 +278,47 @@
             );
         });
         
+
+
+        task3Link.addEventListener('click', (e) => {
+            e.preventDefault();
+            cameraSection.style.display = 'none';
+            document.getElementById('camera-section2').style.display = 'none';
+            chatbotSection.style.display = 'block';
+            chatWindow.innerHTML = "";
+            chatMessage.textContent = "";
+        });
+        
+        sendBtn.addEventListener('click', () => {
+            const userText = chatInput.value.trim();
+            if (!userText) return;
+        
+            chatWindow.innerHTML += `<p><strong>You:</strong> ${userText}</p>`;
+            chatInput.value = '';
+            chatMessage.textContent = "⏳ Thinking...";
+        
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userText })
+            })
+            .then(res => res.json())
+            .then(data => {
+                chatMessage.textContent = "";
+                if (data.reply) {
+                    chatWindow.innerHTML += `<p><strong>Sensei:</strong> ${data.reply}</p>`;
+                } else {
+                    chatWindow.innerHTML += `<p><strong>Sensei:</strong> 🤔 Couldn't understand that.</p>`;
+                }
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            })
+            .catch(err => {
+                chatMessage.textContent = "❌ Error contacting chatbot.";
+                console.error("❌ Chat error:", err);
+            });
+        });
+
+
         captureButton.onclick = captureImage;
 
         document.getElementById("submit-analysis").addEventListener("click", () => {
@@ -249,7 +330,7 @@
             const fullDescription = `Order: ${order}, Price: ₹${price}, Prepared: ${time} mins ago. Notes: ${desc}`;
         
             message1.className = "loading";
-            message.textContent = "🧠 Sending details for analysis...";
+            message1.textContent = "🧠 Sending details for analysis...";
         
             fetch('/capture', {
                 method: 'POST',
@@ -277,6 +358,44 @@
             });
         });
         
+
+        task3Link.addEventListener('click', (e) => {
+    e.preventDefault();
+    cameraSection.style.display = 'none';
+    document.getElementById('camera-section2').style.display = 'none';
+    chatbotSection.style.display = 'block';
+    chatWindow.innerHTML = "";
+    chatMessage.textContent = "";
+});
+
+sendBtn.addEventListener('click', () => {
+    const userText = chatInput.value.trim();
+    if (!userText) return;
+
+    chatWindow.innerHTML += `<p><strong>You:</strong> ${userText}</p>`;
+    chatInput.value = '';
+    chatMessage.textContent = "⏳ Thinking...";
+
+    fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText })
+    })
+    .then(res => res.json())
+    .then(data => {
+        chatMessage.textContent = "";
+        if (data.reply) {
+            chatWindow.innerHTML += `<p><strong>Sensei:</strong> ${data.reply}</p>`;
+        } else {
+            chatWindow.innerHTML += `<p><strong>Sensei:</strong> 🤔 Couldn't understand that.</p>`;
+        }
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    })
+    .catch(err => {
+        chatMessage.textContent = "❌ Error contacting chatbot.";
+        console.error("❌ Chat error:", err);
+    });
+});
     </script>
 </body>
 </html>

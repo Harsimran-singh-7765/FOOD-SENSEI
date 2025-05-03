@@ -45,7 +45,7 @@ def analyze_packaged_food(product_name,detection, company_name=None):
                 role="Nutritional Health Analyst",
                 goal="Give a health score and analysis based on nutrition data, identifying benefits and risks",
                 backstory="You are a certified nutrition expert who evaluates food based on international health norms",
-                tools=[],  # Optional: add Serper tool if you'd like it to cross-verify
+                tools=[],  
                 verbose=True,
                 llm=llm
             )

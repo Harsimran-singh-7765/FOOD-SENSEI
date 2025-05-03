@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import os
 import time
 import tempfile
@@ -13,7 +13,7 @@ from flask_cors import CORS
 import base64
 import sys
 import json
-
+import uuid
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
@@ -24,7 +24,7 @@ from app.ai_core.task1_food_analyzer.detector import detect_food_item
 from app.ai_core.task1_food_analyzer.packaged_handler import analyze_packaged_food
 from app.ai_core.task1_food_analyzer.unpackaged_handler import analyze_unpackaged_food
 from app.ai_core.task2_food_finder.suggestion_engine import get_healthy_places_nearby
-
+from app.ai_core.task3_myth_buster.gemini_response import get_chat_response
 
 
 load_dotenv(dotenv_path=r".env")
@@ -33,18 +33,17 @@ configure(api_key=os.environ["GEMINI_API_KEY"])
 app = Flask(__name__)
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'img')
-
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecret") 
 
 
 def get_frame_description(frame):
     try:
-        # Save image directly to a file
         img_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'captured.png')
         frame.save(img_filename)
 
         print("We are trying to get description.")
 
-        # Prepare the request to Gemini API
+      
         contents = [
             {"text": "Can you describe the contents of the following image? make the disciption detailed and personlised"},
             {
@@ -55,7 +54,7 @@ def get_frame_description(frame):
             }
         ]
         
-        # Make a request to Gemini API to generate content (description)
+
         response = client.models.generate_content(
             model="gemini-2.0-flash-exp-image-generation",
             contents=contents,
@@ -189,5 +188,27 @@ def handle_location():
 
 
 
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json()
+    user_input = data.get("message", "").strip()
+
+    if not user_input:
+        return jsonify({"reply": "Please enter a message."})
+
+    
+    if "session_id" not in session:
+        session["session_id"] = str(uuid.uuid4())
+
+    try:
+        reply = get_chat_response(user_input, session["session_id"])
+        return jsonify({"reply": reply})
+    except Exception as e:
+        print("❌ Chat error:", e)
+        return jsonify({"reply": "Sorry, something went wrong processing your request."})
+    
+    
+    
 if __name__ == "__main__":
     app.run(debug=True)

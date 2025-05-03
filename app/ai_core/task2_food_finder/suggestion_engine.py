@@ -1,4 +1,4 @@
-# suggestion_engine.py
+
 
 import os
 from dotenv import load_dotenv,find_dotenv
@@ -20,13 +20,13 @@ print("GEMINI_API_KEY:", os.getenv("GEMINI_API_KEY"))  # Check if key is loaded
 search_tool = SerperDevTool()
 scrape_tool = ScrapeWebsiteTool()
 
-# Helper: Build location-specific query
+
 def build_query(lat, lon):
     return f"top healthy food places within 5 km of latitude {lat}, longitude {lon}"
 
 
 
-# Final orchestrator
+
 def get_healthy_places_nearby(lat, lon):
     researcher = Agent(
         role="Focused Web Researcher",

@@ -11,7 +11,7 @@ import json
 llm = LLM(model="gemini/gemini-1.5-flash")
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
 
-# Initialize the tools
+
 search_tool = SerperDevTool()
 scrape_tool = ScrapeWebsiteTool()
 
@@ -19,7 +19,7 @@ scrape_tool = ScrapeWebsiteTool()
 
 def analyze_unpackaged_food(description):
     try:
-        # Agent 1: Investigator
+        
         Investigator = Agent(
             role="Descriptive Food Investigator",
             goal=(
@@ -51,7 +51,7 @@ def analyze_unpackaged_food(description):
             llm=llm
         )
 
-        # Agent 3: Frontend Formatter
+    
         
         Editor = Agent(
             role="Frontend Developer and Content Formatter",
@@ -69,7 +69,7 @@ def analyze_unpackaged_food(description):
         )
         
 
-        # Task 1: Analyze the vague food description
+    
         analyze_task = Task(
             description=(
                 f"Analyze this food description: '{description}'. "
@@ -176,7 +176,7 @@ def analyze_unpackaged_food(description):
 
 
 
-        # Run crew
+       
         crew = Crew(agents=[Investigator, Summarizer, Editor], tasks=[analyze_task, refine_task, formatting])
         result = crew.kickoff()
 
