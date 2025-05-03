@@ -23,6 +23,10 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from app.ai_core.task1_food_analyzer.detector import detect_food_item
 from app.ai_core.task1_food_analyzer.packaged_handler import analyze_packaged_food
 from app.ai_core.task1_food_analyzer.unpackaged_handler import analyze_unpackaged_food
+from app.ai_core.task2_food_finder.suggestion_engine import get_healthy_places_nearby
+
+
+
 load_dotenv(dotenv_path=r".env")
 os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY")
 configure(api_key=os.environ["GEMINI_API_KEY"])
@@ -173,18 +177,11 @@ def handle_location():
         print(f"📍 Received location: ({latitude}, {longitude})")
 
         
-      
-        comment_html = f"""
-        <h3>🥗 Healthy Food Options Near You</h3>
-        <ul>
-            <li>🌿 Green Bowl Cafe - 0.4 km away</li>
-            <li>🍲 Fit Feast Kitchen - 0.9 km away</li>
-            <li>🍎 FreshBites Express - 1.2 km away</li>
-        </ul>
-        <p style="color: green;">Showing results for latitude {latitude:.4f}, longitude {longitude:.4f}</p>
-        """
+        verdict = get_healthy_places_nearby(latitude,longitude)
+        verdict = verdict.replace("```html", "").replace("```", "").strip()
 
-        return jsonify({'comment': comment_html})
+
+        return jsonify({'comment': verdict})
 
     except Exception as e:
         print("❌ Error in /location:", e)

@@ -122,7 +122,7 @@
                 })
                 .catch(err => {
                     console.log('Error accessing webcam: ' + err);
-                    message.innerHTML = "⚠️ Error accessing webcam.";
+                    message1.innerHTML = "⚠️ Error accessing webcam.";
                 });
         }
 
@@ -142,8 +142,8 @@
         
 
         function sendImageToServer(imageData) {
-            message.className = "loading";
-            message.textContent = "🧠 Analyzing...";
+            message1.className = "loading";
+            message1.textContent = "🧠 Analyzing...";
         
             fetch('/capture', {
                 method: 'POST',
@@ -152,8 +152,8 @@
             })
             .then(res => res.json())
             .then(data => {
-                message.className = "";
-                message.textContent = "";
+                message1.className = "";
+                message1.textContent = "";
         
                 console.log("📨 Server responded with:", data);
                 if (data.comment) {
@@ -165,8 +165,8 @@
                 }
             })
             .catch(err => {
-                message.className = "";
-                message.textContent = "❌ Error sending image.";
+                message1.className = "";
+                message1.textContent = "❌ Error sending image.";
                 console.error("❌ Fetch error:", err);
             });
         }
@@ -248,7 +248,7 @@
         
             const fullDescription = `Order: ${order}, Price: ₹${price}, Prepared: ${time} mins ago. Notes: ${desc}`;
         
-            message.className = "loading";
+            message1.className = "loading";
             message.textContent = "🧠 Sending details for analysis...";
         
             fetch('/capture', {
@@ -261,8 +261,8 @@
             })
             .then(res => res.json())
             .then(data => {
-                message.className = "";
-                message.textContent = "";
+                message1.className = "";
+                message1.textContent = "";
         
                 if (data.comment) {
                     document.getElementById("verdict-box").innerHTML = data.comment;
@@ -271,8 +271,8 @@
                 }
             })
             .catch(err => {
-                message.className = "";
-                message.textContent = "❌ Error sending data.";
+                message1.className = "";
+                message1.textContent = "❌ Error sending data.";
                 console.error("❌ Fetch error:", err);
             });
         });
