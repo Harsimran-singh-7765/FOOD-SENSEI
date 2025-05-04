@@ -48,6 +48,23 @@ loader-content {
 }
 
 
+/* Outer container for full page center */
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #171717;
+    font-family: 'Cousine', monospace;
+}
+
+/* Inner content holder for vertical stack */
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
 
 /* Logo Styling */
 .loader-logo {
@@ -59,7 +76,7 @@ loader-content {
     box-shadow: 0 0 15px #9f5aff;
 }
 
-/* Text Styling */
+/* Loading text */
 .loading-text {
     color: #9f5aff;
     font-size: 1.2rem;
@@ -67,31 +84,12 @@ loader-content {
     animation: fadeInText 1s ease-out;
 }
 
-/* --- SPINNER CONTAINER --- */
-.loader-container {
-    display: grid;
-    place-items: center;
-    height: 100vh;
-    background: #171717;
-    font-family: 'Cousine', monospace;
-  }
-  
-/* --- Container to center spinner --- */
-.loader-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #171717;
-    font-family: 'Cousine', monospace;
-  }
-  
-  
-  .glow-ring {
+/* Spinner ring */
+.glow-ring {
     position: relative;
     width: 100px;
     height: 100px;
-    border: 5px solid  #9f5aff;
+    border: 5px solid #9f5aff;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -99,6 +97,7 @@ loader-content {
     animation: pulse 1.5s infinite;
 }
 
+/* Spinner text inside ring */
 .loader-text {
     font-size: 20px;
     color: #9f5aff;
@@ -106,34 +105,20 @@ loader-content {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) rotate(0deg); /* Fix rotation */
-    animation: none;
+    transform: translate(-50%, -50%);
 }
-  
-  @keyframes spin {
-    0% { transform: rotate(0); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  
-  @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(123, 104, 238, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 20px rgba(123, 104, 238, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(123, 104, 238, 0);
-    }
+
+/* Animations */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(123, 104, 238, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(123, 104, 238, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(123, 104, 238, 0); }
 }
-  
-  
-  @keyframes fadeInText {
+
+@keyframes fadeInText {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
-  }
-  
+}
 
 
 h1 {
