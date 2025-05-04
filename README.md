@@ -115,6 +115,7 @@ Python app.py
 
 ##DEMO 
 ![image](https://github.com/user-attachments/assets/57cb916e-d98a-4a42-ae67-537ac00e0d6a)
+![image](https://github.com/user-attachments/assets/4808640d-d7cf-449f-8447-17bf5141b2cc)
 
 **DEMO VEDIO WITH OLD UI**
 [Watch demo](sample_task_1.mp4)
