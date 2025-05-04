@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+<div class="background-animated">
+        <!-- Animated background blobs -->
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    
+    <div class="bubbles">
+        <!-- Bubbles container -->
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    
     <div id="loader-wrapper">
         <div class="loader-content">
             <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="loader-logo">
@@ -397,5 +414,28 @@ sendBtn.addEventListener('click', () => {
     });
 });
     </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bubblesContainer = document.querySelector('.bubbles');
+        const bubbleCount = 50; // Change this number to increase or decrease the number of bubbles
+
+        // Function to generate random values
+        function randomRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        for (let i = 0; i < bubbleCount; i++) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            bubble.style.left = `${randomRange(0, 100)}vw`; // Random left position
+            bubble.style.width = `${randomRange(1, 10)}vw`; // Random width
+            bubble.style.height = bubble.style.width; // Same height as width
+            bubble.style.animationDuration = `${randomRange(6, 12)}s`; // Random float speed
+            bubble.style.animationDelay = `${randomRange(0, 4)}s`; // Random delay
+            bubblesContainer.appendChild(bubble);
+        }
+    });
+</script>
 </body>
 </html>
