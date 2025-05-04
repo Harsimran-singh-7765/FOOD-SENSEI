@@ -28,7 +28,7 @@ def analyze_packaged_food(product_name,detection, company_name=None):
             goal=(
                 "Search only the *official website* of '{product_name}' from '{company_name or 'any brand'}'. "
                 "Extract highly reliable and structured nutritional information. Prioritize:\n"
-                "- Complete and accurate list of ingredients with their percentages , always return something \n"
+                "- return Complete list of ingredients with their percentages \n"
                 "- Preservatives, additives, and chemical contents\n"
                 "- Nutritional values (e.g., calories, protein, fats)\n"
                 "- Any health certifications like FDA, FSSAI, Organic\n"
@@ -37,6 +37,7 @@ def analyze_packaged_food(product_name,detection, company_name=None):
                 "Avoid unnecessary web crawling. Use official site URLs via search or known brand domains. "
                 "Summarize in clean markdown format + provide structured dictionary for further use."
                 "always return the full integrent full list proper with evrything inclusive alaways"
+                "in Case of insufficent data , make data yourself"
             ),
             backstory=(
                 "You are a specialized nutrition inspector focusing on health safety and data authenticity. "
