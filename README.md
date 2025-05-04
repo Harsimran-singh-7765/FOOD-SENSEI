@@ -116,6 +116,9 @@ Python app.py
 ##DEMO 
 ![image](https://github.com/user-attachments/assets/57cb916e-d98a-4a42-ae67-537ac00e0d6a)
 
+**DEMO VEDIO WITH OLD UI**
+
+
 ## Developed by Polardevs <p align="center">
   <img src="Polar_dev.png" alt="Food Sensei Logo" width="150"/>
 </p>
