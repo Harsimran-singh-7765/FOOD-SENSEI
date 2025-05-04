@@ -43,7 +43,7 @@
 food-sensei/
 │
 ├── app/  
-│   ├── __init__.py  
+│  
 │   ├── routes.py  
 │   ├── ai_core/  
 │   │   ├── task1_food _analyzer/  
@@ -80,7 +80,7 @@ food-sensei/
 ├── .gitignore   
 ├── requirements.txt   
 ├── config.py   
-├── run.py   
+├── app.py   
 └── README.md   
 
 ---
