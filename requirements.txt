@@ -13,7 +13,7 @@ fqdn==1.5.1
 google-cloud-aiplatform==1.75.0
 google-cloud-vision==3.9.0
 google-genai==1.7.0
-google-generativeai==0.8.3
+google-generativeai
 grpcio-status==1.68.1
 gunicorn==23.0.0
 h2==4.2.0
@@ -23,7 +23,7 @@ imageio==2.36.0
 imageio-ffmpeg==0.5.1
 isoduration==20.11.0
 jaraco.collections==5.1.0
-langchain-google-genai==2.1.2
+langchain-google-genai
 markdown2==2.5.3
 mpld3==0.5.10
 mysql-connector-python==9.1.0
