@@ -1,4 +1,4 @@
-
+# suggestion_engine.py
 
 import os
 from dotenv import load_dotenv,find_dotenv
@@ -8,7 +8,7 @@ from crewai_tools import SerperDevTool, ScrapeWebsiteTool
 from langchain.tools import Tool
 import json
 
-llm = LLM(model="gemini/gemini-2.0-flash")
+llm = LLM(model="gemini/gemini-1.5-flash")
 
  
 
@@ -20,109 +20,90 @@ print("GEMINI_API_KEY:", os.getenv("GEMINI_API_KEY"))  # Check if key is loaded
 search_tool = SerperDevTool()
 scrape_tool = ScrapeWebsiteTool()
 
-
+# Helper: Build location-specific query
 def build_query(lat, lon):
     return f"top healthy food places within 5 km of latitude {lat}, longitude {lon}"
 
 
-def get_healthy_places_nearby(lat, lon):
-    # AGENT 1: Reverse Geocoder
-    geocoder = Agent(
-        role="Geolocation Specialist",
-        goal="Convert coordinates into a human-readable location name.",
-        backstory=(
-            "You are a geography-savvy assistant who excels at turning GPS coordinates into real-world place names "
-            "so that other agents can work with a location-based query rather than raw numbers."
-        ),
-        tools=[search_tool],
-        verbose=True,
-        llm=llm
-    )
 
-    # AGENT 2: Focused Researcher
+# Final orchestrator
+def get_healthy_places_nearby(lat, lon):
     researcher = Agent(
         role="Focused Web Researcher",
-        goal="Find accurate and popular healthy food places nearby the given location name.",
+        goal="Find accurate and popular healthy food places nearby the given coordinates.",
         backstory=(
             "You are a highly focused research assistant specializing in food and wellness. "
             "You are tasked with finding only high-quality, well-reviewed healthy food places near a location."
         ),
-        tools=[search_tool, scrape_tool],
+        tools=[search_tool,scrape_tool],
         verbose=True,
         llm=llm
     )
-
-    # AGENT 3: Menu Analyst
-    analyst = Agent(
-        role="Nutritional Analyst",
-        goal="Analyze menu items from each restaurant and select healthier options.",
-        backstory=(
-            "You are a nutrition-focused assistant who understands food labels and menus. "
-            "You identify meals that are lower in sugar, fried content, and saturated fats, "
-            "and recommend options that are relatively healthier from the given menus."
-            "don't do more than 3 online searches and just return somethiing u find out "
-        ),
-        tools=[search_tool, scrape_tool],
-        verbose=True,
-        llm=llm
-    )
-
-    # AGENT 4: Content Formatter
-    editor = Agent(
-        role="Frontend Developer and Content Formatter",
-        goal="Take analyzed data and convert it into a visually appealing HTML layout with color-coded tags.",
-        backstory=(
-            "You are a frontend-focused AI expert who specializes in converting raw data into beautiful and structured UI components. "
-            "You ensure that nutritional and product data is easy to read and visually appealing for end users."
-            
-            "don't do more than 3 online searches and just return somethiing u find out "
-        ),
-        verbose=True,
-        llm=llm
-    )
-
-    # Task 1: Get location name
-    reverse_geocode = Task(
-        description=f"Convert coordinates ({lat}, {lon}) to a city or neighborhood name using reverse geocoding.",
-        expected_output="Return only the location name (e.g., Indiranagar Bangalore or Midtown NYC).",
-        agent=geocoder
-    )
-
-    # Task 2: Find healthy food spots
-    search_places = Task(
-        description="Search for healthy food restaurants near the location found in Task 1."
-                    "don't do more than 3 online searches and just return somethiing u find out ",
-        expected_output="List 3-5 healthy food places with name, rating, and source link.",
+    
+    
+    Editor = Agent(
+            role="Frontend Developer and Content Formatter",
+            goal=(
+                "Take  response  and generate a visually appealing HTML `<div>` layout. "
+                "Use color-coded tags for key attributes , "
+                "display in dark mode but appleaing view."
+            ),
+            backstory=(
+                "You are a frontend-focused AI expert who specializes in converting raw data into beautiful and structured UI components. "
+                "You ensure that nutritional and product data is easy to read and visually appealing for end users."
+            ),
+            verbose=True,
+            llm=llm,
+        )
+    query = build_query(lat, lon)
+    
+    research = Task(
+        description=f"Use the search tool to find healthy food restaurants: '{query}'",
+        expected_output="A list of 3-5 healthy food places with name, rating, and website or source link.",
         agent=researcher
     )
-
-    # Task 3: Analyze menus
-    analyze_menu = Task(
-        description="Check what each restaurant offers and identify relatively healthier options (e.g., salads, grilled, low sugar)."
-                    "don't do more than 3 online searches and just return somethiing u find out ",
-        expected_output="Return a list of each restaurant with 2-3 recommended healthier items from their menu.",
-        agent=analyst
-    )
-
-    # Task 4: Format for display
-    format_ui = Task(
+    formatting = Task(
         description=(
-            "Take the restaurant names, ratings, menu highlights, and healthy items and format it as a full HTML <div> layout. "
-            "Use dark mode colors, card-style layout, and inline CSS for visual tags like 'Low Carb', 'Grilled', 'Fresh'."
+            "Take the researched list of healthy restaurants and format it as a fixed HTML <div>. "
+            "Use the exact structure below for consistency and visual appeal:\n\n"
+            "<div style='background-color: #121212; color: #ffffff; padding: 20px; font-family: Arial, sans-serif;'>\n"
+            "  <div style='background-color: #1f1f1f; border-radius: 12px; padding: 20px; margin-bottom: 20px;'>\n"
+            "    <h2 style='margin: 0 0 10px; color: #00ffff;'>[Restaurant Name]</h2>\n"
+            "    <p style='margin: 0 0 10px;'>Rating: ⭐ [4.5]</p>\n"
+            "    <p style='margin: 0 0 10px;'><a href='[Website URL]' style='color: #7CFC00; text-decoration: none;'>Visit Website</a></p>\n"
+            "    <h4 style='margin: 10px 0;'>Healthy Dishes:</h4>\n"
+            "    <ul style='list-style-type: none; padding: 0; margin: 0;'>\n"
+            "      <li style='margin-bottom: 8px;'>\n"
+            "        <span style='font-weight: bold;'>[Dish Name]</span>\n"
+            "        <span style='background-color: #000000; color: #ffffff; padding: 3px 8px; border-radius: 6px; margin-left: 6px;'>Grilled</span>\n"
+            "        <span style='background-color: #32CD32; color: #ffffff; padding: 3px 8px; border-radius: 6px; margin-left: 6px;'>Low Carb</span>\n"
+            "      </li>\n"
+            "      <li style='margin-bottom: 8px;'>\n"
+            "        <span style='font-weight: bold;'>[Dish Name]</span>\n"
+            "        <span style='background-color: #800080; color: #ffffff; padding: 3px 8px; border-radius: 6px; margin-left: 6px;'>Vegan</span>\n"
+            "        <span style='background-color: #00ffff; color: #000000; padding: 3px 8px; border-radius: 6px; margin-left: 6px;'>Fresh</span>\n"
+            "      </li>\n"
+            "    </ul>\n"
+            "  </div>\n"
+            "  <!-- Repeat above block for each restaurant -->\n"
+            "</div>\n\n"
+            "Replace the placeholders with actual data. Do not change the structure or styling. "
+            "Use only inline CSS. Return ONLY the full HTML string starting with <div>."
         ),
-        expected_output="Return a full HTML string with a dark-themed layout, using color-coded tags for key highlights.",
-        agent=editor
+        expected_output=(
+            "A complete HTML string wrapped in a <div>, with each restaurant inside a card-like sub-div. "
+            "Use only inline CSS. All tag labels must follow the given color scheme and structure."
+        ),
+        agent=Editor
     )
 
-    # CREW ASSEMBLY
+
     crew = Crew(
-        agents=[geocoder, researcher, analyst, editor],
-        tasks=[reverse_geocode, search_places, analyze_menu, format_ui],
+        agents=[researcher,Editor],
+        tasks=[research,formatting],
         verbose=True,
         llm=llm
     )
 
-    result = crew.kickoff({"lat": lat, "lon": lon})
-    return result.raw
-
-
+    result = crew.kickoff({"query":build_query(lat,lon)})
+    return result.raw 
