@@ -119,6 +119,11 @@ Python app.py
 **DEMO VEDIO WITH OLD UI**
 [Watch demo](sample_task_1.mp4)
 
+<video width="640" height="360" controls>
+  <source src="sample_task_1.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 ## Developed by Polardevs <p align="center">
   <img src="Polar_dev.png" alt="Food Sensei Logo" width="150"/>
 </p>
